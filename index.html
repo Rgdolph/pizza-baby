@@ -375,11 +375,11 @@
     <div class="names-row">
       <div class="name-field">
         <label for="name1">Partner 1's Name</label>
-        <input type="text" id="name1" placeholder="e.g. Jake" oninput="updateNames()">
+        <input type="text" id="name1" placeholder="e.g. Jake" value="Jack" oninput="updateNames()">
       </div>
       <div class="name-field">
         <label for="name2">Partner 2's Name</label>
-        <input type="text" id="name2" placeholder="e.g. Sarah" oninput="updateNames()">
+        <input type="text" id="name2" placeholder="e.g. Sarah" value="Jill" oninput="updateNames()">
       </div>
     </div>
     <div class="date-row" style="margin-top:14px;">
@@ -614,6 +614,9 @@
   const dateField = document.getElementById('dateField');
   const today = new Date().toISOString().split('T')[0];
   dateField.value = today;
+
+  // Initialize names on load
+  updateNames();
 
   function updateNames() {
     const n1 = document.getElementById('name1').value.trim() || 'P1';
