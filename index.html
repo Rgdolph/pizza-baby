@@ -603,16 +603,7 @@
   </div>
 
   <button class="print-btn" onclick="printPage()">🖨️ Print as Keepsake</button>
-  <button class="print-btn" style="background:var(--green);margin-top:10px;" onclick="showKeepsake()">📸 View Keepsake (Screenshot It!)</button>
-  <p class="print-note">Make sure all answers are filled in first!</p>
-  
-  <div id="keepsakeOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;">
-    <div style="max-width:700px;margin:20px auto;background:#fdf6ec;border-radius:16px;padding:28px 22px;position:relative;">
-      <button onclick="document.getElementById('keepsakeOverlay').style.display='none'" style="position:sticky;top:0;float:right;background:#c0392b;color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:1.2rem;cursor:pointer;z-index:10;">✕</button>
-      <div id="keepsakeContent"></div>
-      <p style="text-align:center;margin-top:20px;color:#a0724a;font-size:0.85rem;">📸 Take a screenshot to save this forever!</p>
-    </div>
-  </div>
+  <p class="print-note">Make sure all answers are filled in before printing!</p>
 
 </div>
 
@@ -639,20 +630,15 @@
 
   dateField.addEventListener('input', updateNames);
 
-  function showKeepsake() {
+  function printPage() {
     const n1 = document.getElementById('name1').value.trim() || 'P1';
     const n2 = document.getElementById('name2').value.trim() || 'P2';
     const date = dateField.value ? new Date(dateField.value + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
-    const nameStr = (n1 !== 'P1' && n2 !== 'P2') ? n1 + ' & ' + n2 : '';
+    const nameStr = (n1 !== 'P1' && n2 !== 'P2') ? `${n1} & ${n2}` : '';
     const header = [nameStr, date].filter(Boolean).join(' · ');
 
-    let html = '<div style="text-align:center;margin-bottom:20px;">'
-      + '<div style="font-size:2.5rem;">🍕</div>'
-      + '<div style="font-family:Playfair Display,serif;font-size:1.8rem;font-weight:700;color:#3a2010;">Pizza & Baby Questions</div>'
-      + '<div style="color:#7b4f2e;font-style:italic;margin-top:4px;">A keepsake for the two of you</div>'
-      + (header ? '<div style="color:#a0724a;font-weight:700;margin-top:8px;">' + header + '</div>' : '')
-      + '</div>';
-
+    // Collect all Q&A
+    let html = '';
     document.querySelectorAll('.question-card, .final-card').forEach(card => {
       const label = card.querySelector('.question-label, .final-label')?.textContent || '';
       const question = card.querySelector('.question-text')?.textContent || '';
@@ -660,55 +646,48 @@
       let aHtml = '';
       answers.forEach(row => {
         const name = row.querySelector('.answer-name')?.textContent || '';
-        const val = row.querySelector('textarea')?.value || '';
-        if (val) {
-          aHtml += '<div style="margin:6px 0;"><strong style="color:#7b4f2e;">' + name + ':</strong> ' + val.replace(/</g, '&lt;').replace(/\n/g, '<br>') + '</div>';
-        }
+        const val = row.querySelector('textarea')?.value || '(not answered)';
+        aHtml += '<div style="margin:6px 0;"><strong style="color:#7b4f2e;">' + name + ':</strong> <span>' + val.replace(/</g,'&lt;').replace(/\n/g,'<br>') + '</span></div>';
       });
-      html += '<div style="background:#fff;border:1px solid #e0d5c5;border-radius:12px;padding:14px 16px;margin-bottom:12px;">'
-        + '<div style="font-size:0.7rem;color:#a0724a;font-weight:700;text-transform:uppercase;letter-spacing:1px;">' + label + '</div>'
-        + '<div style="font-size:1rem;font-weight:700;color:#3a2010;margin:4px 0 8px;">' + question + '</div>'
+      html += '<div style="background:#fff;border:1px solid #e0d5c5;border-radius:12px;padding:16px 18px;margin-bottom:14px;break-inside:avoid;">'
+        + '<div style="font-size:0.75rem;color:#a0724a;font-weight:700;text-transform:uppercase;letter-spacing:1px;">' + label + '</div>'
+        + '<div style="font-size:1.05rem;font-weight:700;color:#3a2010;margin:6px 0 10px;">' + question + '</div>'
         + aHtml + '</div>';
     });
 
-    html += '<div style="text-align:center;font-size:1.5rem;margin-top:16px;">🍕❤️🍕</div>';
+    // Build printable page
+    const printHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">'
+      + '<title>Pizza &amp; Baby Questions - Keepsake</title>'
+      + '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">'
+      + '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Lato,sans-serif;color:#3a2010;background:#fdf6ec;padding:20px;max-width:780px;margin:0 auto}'
+      + '.top-bar{height:14px;background:repeating-linear-gradient(90deg,#c0392b 0px,#c0392b 14px,#fdf6ec 14px,#fdf6ec 28px);margin-bottom:24px;border-radius:2px}'
+      + 'h1{font-family:Playfair Display,serif;text-align:center;font-size:2rem;color:#3a2010;margin-bottom:4px}'
+      + '.sub{text-align:center;color:#7b4f2e;font-size:0.95rem;margin-bottom:24px;font-style:italic}'
+      + '.print-btn-row{text-align:center;margin:24px 0}'
+      + '.print-btn-row button{background:#c0392b;color:#fff;border:none;padding:14px 32px;border-radius:50px;font-size:1.05rem;font-weight:700;cursor:pointer;font-family:Lato,sans-serif}'
+      + '.print-btn-row button:active{opacity:0.8}'
+      + '@media print{.print-btn-row{display:none}.top-bar{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body>'
+      + '<div class="top-bar"></div>'
+      + '<div style="text-align:center;font-size:2.5rem;">🍕</div>'
+      + '<h1>Pizza & Baby Questions</h1>'
+      + '<div class="sub">A keepsake for the two of you</div>'
+      + (header ? '<div style="text-align:center;color:#a0724a;font-weight:700;margin-bottom:20px;">' + header + '</div>' : '')
+      + html
+      + '<div style="text-align:center;font-size:1.5rem;margin:20px 0;">🍕❤️🍕</div>'
+      + '<div class="print-btn-row"><button onclick="window.print()">🖨️ Print This Page</button></div>'
+      + '<div class="top-bar" style="margin-top:24px"></div>'
+      + '</body></html>';
 
-    document.getElementById('keepsakeContent').innerHTML = html;
-    document.getElementById('keepsakeOverlay').style.display = 'block';
-    document.getElementById('keepsakeOverlay').scrollTop = 0;
-  }
-
-  function printPage() {
-    const n1 = document.getElementById('name1').value.trim() || 'P1';
-    const n2 = document.getElementById('name2').value.trim() || 'P2';
-    const date = dateField.value ? new Date(dateField.value + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
-    const nameStr = (n1 !== 'P1' && n2 !== 'P2') ? `${n1} & ${n2}` : '';
-    document.getElementById('printNames').textContent = [nameStr, date].filter(Boolean).join(' · ');
-
-    // Bake textarea values into data attributes so CSS can show them in print
-    document.querySelectorAll('textarea').forEach(ta => {
-      const span = document.createElement('span');
-      span.className = 'print-text';
-      span.textContent = ta.value || '';
-      // Remove old ones first
-      const old = ta.parentNode.querySelector('.print-text');
-      if (old) old.remove();
-      ta.parentNode.appendChild(span);
-    });
-
-    // Add ready class to body for print mode
-    document.body.classList.add('print-ready');
-    
-    // Trigger print
-    if (window.print) {
-      window.print();
+    const w = window.open('', '_blank');
+    if (w) {
+      w.document.write(printHTML);
+      w.document.close();
+    } else {
+      // Fallback: navigate current page
+      document.open();
+      document.write(printHTML);
+      document.close();
     }
-
-    // On iOS Safari, window.print may not exist or may silently fail
-    // Show a fallback message after a short delay
-    setTimeout(() => {
-      document.body.classList.remove('print-ready');
-    }, 2000);
   }
 </script>
 
