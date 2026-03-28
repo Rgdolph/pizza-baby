@@ -317,25 +317,27 @@
 
   /* ---- PRINT STYLES ---- */
   @media print {
-    body { background: white; font-size: 12px; }
+    body { background: white !important; font-size: 12px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .top-border, .bottom-border { display: none; }
-    .print-btn, .print-note, .names-section { display: none; }
+    .print-btn, .print-note, .names-section { display: none !important; }
     .wrapper { padding: 10px 10px 20px; max-width: 100%; }
-    .question-card, .final-card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; margin-bottom: 10px; padding: 12px 14px; }
+    .question-card, .final-card { box-shadow: none !important; border: 1px solid #ddd; break-inside: avoid; margin-bottom: 10px; padding: 12px 14px; }
     textarea {
-      border: none;
+      display: none !important;
+    }
+    .print-answer {
+      display: block !important;
+      min-height: 30px;
       border-bottom: 1px solid #ccc;
-      border-radius: 0;
-      background: transparent;
-      min-height: 40px;
-      resize: none;
-      font-size: 11px;
-      padding: 4px 2px;
+      padding: 6px 4px;
+      font-size: 12px;
     }
     .header h1 { font-size: 2rem; }
-    .print-header-names { display: block !important; }
+    .header .intro { font-size: 0.85rem; }
+    .print-header-names { display: block !important; font-size: 1.1rem; margin-bottom: 8px; }
     .divider { margin: 16px 0 12px; }
     .round-title { font-size: 1.1rem; margin-bottom: 10px; }
+    .answer-name { font-size: 0.8rem; min-width: 50px; }
   }
 
   .print-header-names {
@@ -632,7 +634,24 @@
     const date = dateField.value ? new Date(dateField.value + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
     const nameStr = (n1 && n2) ? `${n1} & ${n2}` : (n1 || n2);
     document.getElementById('printNames').textContent = [nameStr, date].filter(Boolean).join(' · ');
+
+    // Replace textareas with styled divs for print (so text shows up)
+    document.querySelectorAll('textarea').forEach(ta => {
+      const div = document.createElement('div');
+      div.className = 'print-answer';
+      div.style.cssText = 'min-height:30px;padding:6px 4px;border-bottom:1px solid #ccc;font-family:Lato,sans-serif;font-size:0.95rem;white-space:pre-wrap;color:#3a2010;';
+      div.textContent = ta.value || '(not answered)';
+      ta.style.display = 'none';
+      ta.parentNode.insertBefore(div, ta.nextSibling);
+    });
+
     window.print();
+
+    // Restore textareas after print
+    setTimeout(() => {
+      document.querySelectorAll('.print-answer').forEach(div => div.remove());
+      document.querySelectorAll('textarea').forEach(ta => ta.style.display = '');
+    }, 1000);
   }
 </script>
 
