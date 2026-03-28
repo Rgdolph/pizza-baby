@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pizza & Baby Questions 🍕</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #c0392b;
+    --red-light: #e74c3c;
+    --cream: #fdf6ec;
+    --warm: #f5e6d0;
+    --brown: #7b4f2e;
+    --brown-light: #a0724a;
+    --green: #2e7d4f;
+    --gold: #c8963e;
+    --text: #3a2010;
+    --shadow: rgba(58,32,16,0.13);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--cream);
+    font-family: 'Lato', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* Checkered border top */
+  .top-border {
+    height: 18px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--red) 0px, var(--red) 18px,
+      var(--cream) 18px, var(--cream) 36px
+    );
+  }
+
+  .wrapper {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .pizza-emoji {
+    font-size: 56px;
+    display: block;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 4px 8px var(--shadow));
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--red);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .header .subtitle {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--brown-light);
+    margin-bottom: 18px;
+  }
+
+  .header .intro {
+    font-size: 0.95rem;
+    color: var(--brown);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.7;
+    background: var(--warm);
+    border-radius: 12px;
+    padding: 16px 20px;
+    border-left: 4px solid var(--gold);
+  }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 36px 0 28px;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--gold); opacity: 0.5; }
+  .divider-emoji { font-size: 1.2rem; }
+
+  /* Round header */
+  .round-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--red);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .round-title .round-badge {
+    background: var(--red);
+    color: white;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  /* Question cards */
+  .question-card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 12px var(--shadow);
+    border-top: 3px solid var(--gold);
+    transition: box-shadow 0.2s;
+  }
+  .question-card:hover { box-shadow: 0 4px 20px var(--shadow); }
+
+  .question-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .question-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--text);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  .answer-fields { display: flex; flex-direction: column; gap: 10px; }
+
+  .answer-row { display: flex; align-items: flex-start; gap: 10px; }
+
+  .answer-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--brown-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 36px;
+    padding-top: 9px;
+  }
+
+  textarea {
+    flex: 1;
+    border: 1.5px solid #e0d0c0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    background: var(--cream);
+    resize: vertical;
+    min-height: 60px;
+    transition: border-color 0.2s;
+    line-height: 1.5;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: var(--red);
+    background: white;
+  }
+  textarea::placeholder { color: #c4a882; font-style: italic; }
+
+  /* Final question */
+  .final-card {
+    background: linear-gradient(135deg, #fff5ec, #fde8d8);
+    border: 2px solid var(--red);
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin-top: 12px;
+    text-align: center;
+  }
+  .final-card .final-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+  .final-card .question-text { font-size: 1.15rem; margin-bottom: 18px; }
+  .final-card .answer-fields { text-align: left; }
+
+  /* Names input */
+  .names-section {
+    background: white;
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 12px var(--shadow);
+    border-top: 3px solid var(--red);
+  }
+  .names-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--red);
+    margin-bottom: 14px;
+  }
+  .names-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .name-field { flex: 1; min-width: 180px; }
+  .name-field label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--brown-light);
+    margin-bottom: 5px;
+  }
+  .name-field input {
+    width: 100%;
+    border: 1.5px solid #e0d0c0;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    background: var(--cream);
+    transition: border-color 0.2s;
+  }
+  .name-field input:focus {
+    outline: none;
+    border-color: var(--red);
+    background: white;
+  }
+
+  /* Date */
+  .date-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .date-row label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--brown-light);
+  }
+  .date-row input {
+    border: 1.5px solid #e0d0c0;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: var(--cream);
+  }
+  .date-row input:focus { outline: none; border-color: var(--red); }
+
+  /* Print button */
+  .print-btn {
+    display: block;
+    margin: 40px auto 0;
+    background: var(--red);
+    color: white;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 50px;
+    padding: 16px 44px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(192,57,43,0.3);
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  }
+  .print-btn:hover {
+    background: var(--red-light);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(192,57,43,0.35);
+  }
+  .print-btn:active { transform: translateY(0); }
+
+  .print-note {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--brown-light);
+    margin-top: 12px;
+    font-style: italic;
+  }
+
+  /* Bottom border */
+  .bottom-border {
+    height: 18px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--red) 0px, var(--red) 18px,
+      var(--cream) 18px, var(--cream) 36px
+    );
+    margin-top: 60px;
+  }
+
+  /* ---- PRINT STYLES ---- */
+  @media print {
+    body { background: white; font-size: 12px; }
+    .top-border, .bottom-border { display: none; }
+    .print-btn, .print-note, .names-section { display: none; }
+    .wrapper { padding: 10px 10px 20px; max-width: 100%; }
+    .question-card, .final-card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; margin-bottom: 10px; padding: 12px 14px; }
+    textarea {
+      border: none;
+      border-bottom: 1px solid #ccc;
+      border-radius: 0;
+      background: transparent;
+      min-height: 40px;
+      resize: none;
+      font-size: 11px;
+      padding: 4px 2px;
+    }
+    .header h1 { font-size: 2rem; }
+    .print-header-names { display: block !important; }
+    .divider { margin: 16px 0 12px; }
+    .round-title { font-size: 1.1rem; margin-bottom: 10px; }
+  }
+
+  .print-header-names {
+    display: none;
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--brown);
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="top-border"></div>
+
+<div class="wrapper">
+
+  <div class="header">
+    <span class="pizza-emoji">🍕</span>
+    <h1>Pizza & Baby Questions</h1>
+    <p class="subtitle">A keepsake for the two of you</p>
+    <p class="print-header-names" id="printNames"></p>
+    <p class="intro">
+      We know there's been a lot of stress and craziness lately. Tonight, no worrying allowed.
+      Just pizza, just the two of you, and these questions to remind you of the incredible blessing you're bringing into this world. Fill out your answers together and print this out to keep forever. 🍕❤️
+    </p>
+  </div>
+
+  <!-- Names -->
+  <div class="names-section">
+    <h3>✏️ Fill in your names first!</h3>
+    <div class="names-row">
+      <div class="name-field">
+        <label for="name1">Partner 1's Name</label>
+        <input type="text" id="name1" placeholder="e.g. Jake" oninput="updateNames()">
+      </div>
+      <div class="name-field">
+        <label for="name2">Partner 2's Name</label>
+        <input type="text" id="name2" placeholder="e.g. Sarah" oninput="updateNames()">
+      </div>
+    </div>
+    <div class="date-row" style="margin-top:14px;">
+      <label for="dateField">Date of Pizza Night:</label>
+      <input type="date" id="dateField">
+    </div>
+  </div>
+
+  <!-- Round 1 -->
+  <div class="divider"><div class="divider-line"></div><span class="divider-emoji">🌟</span><div class="divider-line"></div></div>
+  <div class="round-title"><span class="round-badge">Round 1</span> Dream Big</div>
+
+  <div class="question-card">
+    <div class="question-label">Question 1</div>
+    <div class="question-text">What's one thing you can't wait to teach this baby?</div>
+    <div class="answer-fields">
+      <div class="answer-row">
+        <span class="answer-name name1-label">P1</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="answer-row">
+        <span class="answer-name name2-label">P2</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="question-label">Question 2</div>
+    <div class="question-text">What's the first trip you want to take as a family of three?</div>
+    <div class="answer-fields">
+      <div class="answer-row">
+        <span class="answer-name name1-label">P1</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="answer-row">
+        <span class="answer-name name2-label">P2</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="question-label">Question 3</div>
+    <div class="question-text">What's a family tradition you want to start?</div>
+    <div class="answer-fields">
+      <div class="answer-row">
+        <span class="answer-name name1-label">P1</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="answer-row">
+        <span class="answer-name name2-label">P2</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Round 2 -->
+  <div class="divider"><div class="divider-line"></div><span class="divider-emoji">😂</span><div class="divider-line"></div></div>
+  <div class="round-title"><span class="round-badge">Round 2</span> Funny Futures</div>
+
+  <div class="question-card">
+    <div class="question-label">Question 4</div>
+    <div class="question-text">What's the most embarrassing thing this kid will probably do in public?</div>
+    <div class="answer-fields">
+      <div class="answer-row">
+        <span class="answer-name name1-label">P1</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="answer-row">
+        <span class="answer-name name2-label">P2</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="question-label">Question 5</div>
+    <div class="question-text">What celebrity does your baby already remind you of, based on personality, kicks and all?</div>
+    <div class="answer-fields">
+      <div class="answer-row">
+        <span class="answer-name name1-label">P1</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="answer-row">
+        <span class="answer-name name2-label">P2</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="question-label">Question 6</div>
+    <div class="question-text">What's the first Halloween costume you're already planning?</div>
+    <div class="answer-fields">
+      <div class="answer-row">
+        <span class="answer-name name1-label">P1</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="answer-row">
+        <span class="answer-name name2-label">P2</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Round 3 -->
+  <div class="divider"><div class="divider-line"></div><span class="divider-emoji">❤️</span><div class="divider-line"></div></div>
+  <div class="round-title"><span class="round-badge">Round 3</span> Sweet Stuff</div>
+
+  <div class="question-card">
+    <div class="question-label">Question 7</div>
+    <div class="question-text">What's one thing you love about each other that you hope the baby inherits?</div>
+    <div class="answer-fields">
+      <div class="answer-row">
+        <span class="answer-name name1-label">P1</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="answer-row">
+        <span class="answer-name name2-label">P2</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="question-label">Question 8</div>
+    <div class="question-text">What's a moment from your relationship that you want to tell this baby about someday?</div>
+    <div class="answer-fields">
+      <div class="answer-row">
+        <span class="answer-name name1-label">P1</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="answer-row">
+        <span class="answer-name name2-label">P2</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="question-label">Question 9</div>
+    <div class="question-text">What's one word you each want this baby to think of when they think of home?</div>
+    <div class="answer-fields">
+      <div class="answer-row">
+        <span class="answer-name name1-label">P1</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="answer-row">
+        <span class="answer-name name2-label">P2</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Round 4 -->
+  <div class="divider"><div class="divider-line"></div><span class="divider-emoji">✨</span><div class="divider-line"></div></div>
+  <div class="round-title"><span class="round-badge">Round 4</span> Big Dreams</div>
+
+  <div class="question-card">
+    <div class="question-label">Question 10</div>
+    <div class="question-text">If your baby could grow up to do anything in the world, what would make you the proudest?</div>
+    <div class="answer-fields">
+      <div class="answer-row">
+        <span class="answer-name name1-label">P1</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="answer-row">
+        <span class="answer-name name2-label">P2</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="question-label">Question 11</div>
+    <div class="question-text">What's something you're going to be a really great parent at?</div>
+    <div class="answer-fields">
+      <div class="answer-row">
+        <span class="answer-name name1-label">P1</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="answer-row">
+        <span class="answer-name name2-label">P2</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="question-label">Question 12</div>
+    <div class="question-text">What's the first thing you want to say to them when you hold them for the first time?</div>
+    <div class="answer-fields">
+      <div class="answer-row">
+        <span class="answer-name name1-label">P1</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="answer-row">
+        <span class="answer-name name2-label">P2</span>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Final Question -->
+  <div class="divider"><div class="divider-line"></div><span class="divider-emoji">🍕</span><div class="divider-line"></div></div>
+
+  <div class="final-card">
+    <div class="final-label">🏁 Last Slice Question</div>
+    <div class="question-text">What does the other person do that already makes you know they're going to be an amazing parent?</div>
+    <div class="answer-fields">
+      <div class="answer-row">
+        <span class="answer-name name1-label">P1</span>
+        <textarea placeholder="Save the best for last..."></textarea>
+      </div>
+      <div class="answer-row">
+        <span class="answer-name name2-label">P2</span>
+        <textarea placeholder="Save the best for last..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <button class="print-btn" onclick="printPage()">🖨️ Print as Keepsake</button>
+  <p class="print-note">Make sure all answers are filled in before printing!</p>
+
+</div>
+
+<div class="bottom-border"></div>
+
+<script>
+  // Set today's date as default
+  const dateField = document.getElementById('dateField');
+  const today = new Date().toISOString().split('T')[0];
+  dateField.value = today;
+
+  function updateNames() {
+    const n1 = document.getElementById('name1').value.trim() || 'P1';
+    const n2 = document.getElementById('name2').value.trim() || 'P2';
+
+    document.querySelectorAll('.name1-label').forEach(el => el.textContent = n1);
+    document.querySelectorAll('.name2-label').forEach(el => el.textContent = n2);
+
+    // Update print header
+    const date = dateField.value ? new Date(dateField.value + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+    const nameStr = (n1 !== 'P1' && n2 !== 'P2') ? `${n1} & ${n2}` : '';
+    document.getElementById('printNames').textContent = [nameStr, date].filter(Boolean).join(' · ');
+  }
+
+  dateField.addEventListener('input', updateNames);
+
+  function printPage() {
+    const n1 = document.getElementById('name1').value.trim();
+    const n2 = document.getElementById('name2').value.trim();
+    const date = dateField.value ? new Date(dateField.value + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+    const nameStr = (n1 && n2) ? `${n1} & ${n2}` : (n1 || n2);
+    document.getElementById('printNames').textContent = [nameStr, date].filter(Boolean).join(' · ');
+    window.print();
+  }
+</script>
+
+</body>
+</html>
