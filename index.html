@@ -315,6 +315,11 @@
     margin-top: 60px;
   }
 
+  /* Print text spans - hidden on screen, visible in print */
+  .print-text {
+    display: none;
+  }
+
   /* ---- PRINT STYLES ---- */
   @media print {
     body { background: white !important; font-size: 12px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -322,18 +327,18 @@
     .print-btn, .print-note, .names-section { display: none !important; }
     .wrapper { padding: 10px 10px 20px; max-width: 100%; }
     .question-card, .final-card { box-shadow: none !important; border: 1px solid #ddd; break-inside: avoid; margin-bottom: 10px; padding: 12px 14px; }
-    textarea {
-      display: none !important;
-    }
-    .print-answer {
+    textarea { display: none !important; }
+    .print-text {
       display: block !important;
-      min-height: 30px;
-      border-bottom: 1px solid #ccc;
-      padding: 6px 4px;
-      font-size: 12px;
+      min-height: 24px;
+      padding: 4px 0;
+      border-bottom: 1px solid #ddd;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.9rem;
+      color: #3a2010;
+      white-space: pre-wrap;
     }
     .header h1 { font-size: 2rem; }
-    .header .intro { font-size: 0.85rem; }
     .print-header-names { display: block !important; font-size: 1.1rem; margin-bottom: 8px; }
     .divider { margin: 16px 0 12px; }
     .round-title { font-size: 1.1rem; margin-bottom: 10px; }
@@ -598,7 +603,7 @@
   </div>
 
   <button class="print-btn" onclick="printPage()">🖨️ Print as Keepsake</button>
-  <p class="print-note">Make sure all answers are filled in before printing!</p>
+  <p class="print-note">Make sure all answers are filled in before printing!<br><em>On iPhone/iPad: use Share → Print or Save as PDF</em></p>
 
 </div>
 
@@ -630,52 +635,32 @@
     const n2 = document.getElementById('name2').value.trim() || 'P2';
     const date = dateField.value ? new Date(dateField.value + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
     const nameStr = (n1 !== 'P1' && n2 !== 'P2') ? `${n1} & ${n2}` : '';
-    const header = [nameStr, date].filter(Boolean).join(' · ');
+    document.getElementById('printNames').textContent = [nameStr, date].filter(Boolean).join(' · ');
 
-    // Collect all Q&A
-    let html = '';
-    document.querySelectorAll('.question-card, .final-card').forEach(card => {
-      const label = card.querySelector('.question-label, .final-label')?.textContent || '';
-      const question = card.querySelector('.question-text')?.textContent || '';
-      const answers = card.querySelectorAll('.answer-row');
-      let aHtml = '';
-      answers.forEach(row => {
-        const name = row.querySelector('.answer-name')?.textContent || '';
-        const val = row.querySelector('textarea')?.value || '(not answered)';
-        aHtml += '<div style="margin:6px 0;"><strong style="color:#7b4f2e;">' + name + ':</strong> <span>' + val.replace(/</g,'&lt;') + '</span></div>';
-      });
-      html += '<div style="background:#fff;border:1px solid #ddd;border-radius:12px;padding:16px 18px;margin-bottom:14px;break-inside:avoid;">'
-        + '<div style="font-size:0.75rem;color:#a0724a;font-weight:700;text-transform:uppercase;letter-spacing:1px;">' + label + '</div>'
-        + '<div style="font-size:1.05rem;font-weight:700;color:#3a2010;margin:6px 0 10px;">' + question + '</div>'
-        + aHtml + '</div>';
+    // Bake textarea values into data attributes so CSS can show them in print
+    document.querySelectorAll('textarea').forEach(ta => {
+      const span = document.createElement('span');
+      span.className = 'print-text';
+      span.textContent = ta.value || '';
+      // Remove old ones first
+      const old = ta.parentNode.querySelector('.print-text');
+      if (old) old.remove();
+      ta.parentNode.appendChild(span);
     });
 
-    // Build printable page
-    const printHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">'
-      + '<title>Pizza & Baby Questions - Keepsake</title>'
-      + '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">'
-      + '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Lato,sans-serif;color:#3a2010;background:#fdf6ec;padding:20px;max-width:780px;margin:0 auto}'
-      + '.top-bar{height:14px;background:repeating-linear-gradient(90deg,#c0392b 0px,#c0392b 14px,#fdf6ec 14px,#fdf6ec 28px);margin-bottom:24px;border-radius:2px}'
-      + 'h1{font-family:Playfair Display,serif;text-align:center;font-size:2rem;color:#3a2010;margin-bottom:4px}'
-      + '.sub{text-align:center;color:#7b4f2e;font-size:0.95rem;margin-bottom:24px}'
-      + '.print-btn-row{text-align:center;margin:24px 0}'
-      + '.print-btn-row button{background:#c0392b;color:#fff;border:none;padding:12px 28px;border-radius:50px;font-size:1rem;font-weight:700;cursor:pointer;font-family:Lato,sans-serif}'
-      + '@media print{.print-btn-row{display:none}.top-bar{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body>'
-      + '<div class="top-bar"></div>'
-      + '<h1>🍕 Pizza & Baby Questions</h1>'
-      + (header ? '<div class="sub">' + header + '</div>' : '<div class="sub">A keepsake for the two of you</div>')
-      + html
-      + '<div class="print-btn-row"><button onclick="window.print()">🖨️ Print This Page</button></div>'
-      + '<div class="top-bar" style="margin-top:24px"></div>'
-      + '</body></html>';
-
-    const w = window.open('', '_blank');
-    if (w) {
-      w.document.write(printHTML);
-      w.document.close();
-    } else {
-      alert('Please allow popups to print your keepsake!');
+    // Add ready class to body for print mode
+    document.body.classList.add('print-ready');
+    
+    // Trigger print
+    if (window.print) {
+      window.print();
     }
+
+    // On iOS Safari, window.print may not exist or may silently fail
+    // Show a fallback message after a short delay
+    setTimeout(() => {
+      document.body.classList.remove('print-ready');
+    }, 2000);
   }
 </script>
 
